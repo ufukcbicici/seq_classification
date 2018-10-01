@@ -1,0 +1,7 @@
+Some experiments on symbolic sequence classification. Includes or will include:
+-Tf-idf features
+-k-gram features
+-NB,SVM,RDF based classifiers
+-HMM based models
+-Kernel machines
+-Word Embedding and RNN based models.
