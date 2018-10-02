@@ -27,8 +27,10 @@ class SymbolicCorpus(Corpus):
         print("X")
 
     def analyze_data(self):
-        rows = [(k, v) for k, v in self.fullTrainingCorpusFrequencies.items()]
-        DbLogger.write_into_table(rows=rows, table=DbLogger.trainingVocabularyLargeTable, col_count=2)
-        rows = [(k, v) for k, v in self.fullTestCorpusFrequencies.items()]
-        DbLogger.write_into_table(rows=rows, table=DbLogger.testVocabularyLargeTable, col_count=2)
+        # rows = [(k, v) for k, v in self.fullTrainingCorpusFrequencies.items()]
+        # DbLogger.write_into_table(rows=rows, table=DbLogger.trainingVocabularyLargeTable, col_count=2)
+        # rows = [(k, v) for k, v in self.fullTestCorpusFrequencies.items()]
+        # DbLogger.write_into_table(rows=rows, table=DbLogger.testVocabularyLargeTable, col_count=2)
+
+
         print("X")
