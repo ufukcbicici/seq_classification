@@ -55,6 +55,8 @@ class Corpus:
     def read_documents(self, path, is_training):
         pass
 
+    def analyze_data(self):
+        pass
         # with open(json_path, encoding="utf8") as f:
         #     lines = f.readlines()
         # self.documents = MultiTaskRunner.run_task(runner_type=IdeaCorpusTokenizer, tasks=lines,
