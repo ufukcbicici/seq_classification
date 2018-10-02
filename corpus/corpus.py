@@ -31,28 +31,19 @@ import numpy as np
 class Corpus:
     def __init__(self):
         self.trainingSequences = []
+        self.validationSequences = []
         self.testSequences = []
         self.fullTrainingCorpusFrequencies = {}
+        self.fullValidationCorpusFrequencies = {}
         self.fullTestCorpusFrequencies = {}
-        # self.fullVocabularyDocumentFrequencies = {}
-        # self.fullVocabularyTfIdf = {}
-        # self.validVocabularyFrequencies = {}
-        # self.validVocabularyTokenToIndex = {}
-        # self.validVocabularyIndexToToken = {}
-        # self.setOfUnknownTokens = set()
-        # self.embeddingContextsAndTargets = None
-        # self.currentIndex = 0
-        # self.currentIndices = None
-        # self.isNewEpoch = False
-        # self.currentEpoch = 0
-        # # Classifier Training
-        # self.trainingSequences = []
-        # self.validationSequences = []
-        # self.currentSequenceList = None
-        # self.currentIndexList = []
-        # self.currentSequenceIndex = None
 
     def read_documents(self, path, is_training):
+        pass
+
+    def pick_validation_set(self, validation_set):
+        pass
+
+    def write_vocabularies_to_db(self, training_table, test_table):
         pass
 
     def analyze_data(self):
