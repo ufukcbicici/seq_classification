@@ -80,6 +80,7 @@ class SymbolicCorpus(Corpus):
                 self.lowFreqTokenClusterCenters[letter] = np.array(numeric_codes[0])
                 print("X")
             else:
+                self.lowFreqTokenClusterCenters[letter] = []
                 # Divide into partitions recursively until all clusters have a freq < TOTAL_COUNT*MAX_CLUSTER_FREQ_RATIO
                 numeric_arr = np.array(numeric_codes).reshape(len(numeric_codes), 1)
                 freq_threshold = int(float(numeric_arr.shape[0]) * GlobalConstants.MAX_CLUSTER_FREQ_RATIO)
