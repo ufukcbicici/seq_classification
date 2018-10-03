@@ -7,7 +7,7 @@ from random import seed
 from random import shuffle
 from sklearn.cluster import MeanShift, estimate_bandwidth
 import numpy as np
-
+from collections import deque
 from global_constants import GlobalConstants
 
 
@@ -15,6 +15,7 @@ class SymbolicCorpus(Corpus):
     def __init__(self):
         super().__init__()
         seed(42)
+        self.lowFreqTokenClusterCenters = {}
 
     def read_documents(self, path, is_training):
         sequence_list = self.trainingSequences if is_training else self.testSequences
@@ -74,15 +75,45 @@ class SymbolicCorpus(Corpus):
             for token in low_freq_tokens:
                 if token[0] == letter:
                     numeric_codes_dict[letter].append(int(token[1:]))
-            numeric_arr = np.array(numeric_codes_dict[letter]).reshape(len(numeric_codes_dict[letter]), 1)
-            bandwidth = estimate_bandwidth(numeric_arr)
-            ms = MeanShift(bandwidth=bandwidth)
-            ms.fit(numeric_arr)
-            labels = ms.labels_
-            cluster_centers = ms.cluster_centers_
-            labels_unique = np.unique(labels)
-            n_clusters_ = len(labels_unique)
-            print("X")
+            numeric_codes = numeric_codes_dict[letter]
+            if len(numeric_codes) == 1:
+                self.lowFreqTokenClusterCenters[letter] = np.array(numeric_codes[0])
+                print("X")
+            else:
+                # Divide into partitions recursively until all clusters have a freq < TOTAL_COUNT*MAX_CLUSTER_FREQ_RATIO
+                numeric_arr = np.array(numeric_codes).reshape(len(numeric_codes), 1)
+                freq_threshold = int(float(numeric_arr.shape[0]) * GlobalConstants.MAX_CLUSTER_FREQ_RATIO)
+                cluster_info_tpls = deque()
+                cluster_info_tpls.append(numeric_arr)
+                while len(cluster_info_tpls) > 0:
+                    sub_cluster = cluster_info_tpls.popleft()
+                    bandwidth = estimate_bandwidth(sub_cluster)
+                    ms = MeanShift(bandwidth=bandwidth)
+                    ms.fit(numeric_arr)
+                    labels = np.unique(ms.labels_)
+                    cluster_centers = ms.cluster_centers_
+                    for label in labels:
+                        label_mask = ms.labels_ == label
+                        new_cluster_freq = np.sum(label_mask)
+                        # Cluster is too big.
+                        if new_cluster_freq >= freq_threshold:
+                            # Select members with the given label
+                            new_cluster = sub_cluster[np.nonzero(label_mask), :]
+                            cluster_info_tpls.append(new_cluster)
+                        # Cluster is small enough
+                        else:
+                            cluster_center = cluster_centers[label]
+                            self.lowFreqTokenClusterCenters[letter].apppend(cluster_center)
+                        print("X")
+                # numeric_arr = np.array(numeric_codes).reshape(len(numeric_codes), 1)
+                # bandwidth = estimate_bandwidth(numeric_arr)
+                # ms = MeanShift(bandwidth=bandwidth)
+                # ms.fit(numeric_arr)
+                # labels = ms.labels_
+                # cluster_centers = ms.cluster_centers_
+                # self.lowFreqTokenClusterCenters[letter] = cluster_centers.reshape(cluster_centers.shape[0])
+                # print("X")
+                # if len((numeric_codes_dict[letter])        :
         # Apply mean-shift
         print("X")
 
