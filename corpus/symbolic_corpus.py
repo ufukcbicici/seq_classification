@@ -5,7 +5,10 @@ from corpus.sequence import Sequence
 from corpus.symbolic_reader import SymbolicReader
 from random import seed
 from random import shuffle
+from sklearn.cluster import MeanShift, estimate_bandwidth
 import numpy as np
+
+from global_constants import GlobalConstants
 
 
 class SymbolicCorpus(Corpus):
@@ -43,15 +46,6 @@ class SymbolicCorpus(Corpus):
         del self.trainingSequences[0:max_id]
         print("X")
 
-        # validation_ids = set(
-        #     np.random.choice(len(self.trainingSequences), int(len(self.trainingSequences) * validation_set),
-        #                      replace=False).tolist())
-        # for id in validation_ids:
-        #     if id ==
-        # sampled_document_sequences = [seq for index, seq in enumerate(document_sequences)
-        #                               if index in sample_sequence_ids]
-        # all_sequences.extend(sampled_document_sequences)
-
     def write_vocabularies_to_db(self, training_table, test_table):
         rows = [(k, v) for k, v in self.fullTrainingCorpusFrequencies.items()]
         DbLogger.write_into_table(rows=rows, table=training_table, col_count=2)
@@ -60,6 +54,7 @@ class SymbolicCorpus(Corpus):
         print("X")
 
     def analyze_data(self):
+        # Build Vocabularies
         sequences = [self.trainingSequences, self.validationSequences, self.testSequences]
         vocabularies = [self.fullTrainingCorpusFrequencies, self.fullValidationCorpusFrequencies,
                         self.fullTestCorpusFrequencies]
@@ -69,5 +64,25 @@ class SymbolicCorpus(Corpus):
                     if token not in vocabulary:
                         vocabulary[token] = 0
                     vocabulary[token] += 1
+        # Build vocabulary
+        first_letters = set([token[0] for token in self.fullTrainingCorpusFrequencies.keys()])
+        low_freq_tokens = [token for token, freq in self.fullTrainingCorpusFrequencies.items()
+                           if freq < GlobalConstants.CORPUS_FREQUENCY_THRESHOLD]
+        numeric_codes_dict = {}
+        for letter in first_letters:
+            numeric_codes_dict[letter] = []
+            for token in low_freq_tokens:
+                if token[0] == letter:
+                    numeric_codes_dict[letter].append(int(token[1:]))
+            numeric_arr = np.array(numeric_codes_dict[letter]).reshape(len(numeric_codes_dict[letter]), 1)
+            bandwidth = estimate_bandwidth(numeric_arr)
+            ms = MeanShift(bandwidth=bandwidth)
+            ms.fit(numeric_arr)
+            labels = ms.labels_
+            cluster_centers = ms.cluster_centers_
+            labels_unique = np.unique(labels)
+            n_clusters_ = len(labels_unique)
+            print("X")
+        # Apply mean-shift
         print("X")
 
