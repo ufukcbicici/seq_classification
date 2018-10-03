@@ -99,12 +99,12 @@ class SymbolicCorpus(Corpus):
                         # Cluster is too big.
                         if new_cluster_freq >= freq_threshold:
                             # Select members with the given label
-                            new_cluster = sub_cluster[np.nonzero(label_mask), :]
+                            new_cluster = sub_cluster[np.nonzero(label_mask)]
                             cluster_info_tpls.append(new_cluster)
                         # Cluster is small enough
                         else:
                             cluster_center = cluster_centers[label]
-                            self.lowFreqTokenClusterCenters[letter].apppend(cluster_center)
+                            self.lowFreqTokenClusterCenters[letter].append(cluster_center)
                         print("X")
                 # numeric_arr = np.array(numeric_codes).reshape(len(numeric_codes), 1)
                 # bandwidth = estimate_bandwidth(numeric_arr)
