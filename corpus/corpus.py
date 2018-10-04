@@ -30,8 +30,6 @@ class Corpus:
     def get_token_id(self, token):
         pass
 
-
-
     def read_vocabulary(self):
         rows = DbLogger.read_tuples_from_table(table_name=DbLogger.finalizedVocabularyTable)
         for row in rows:
