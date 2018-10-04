@@ -1,5 +1,6 @@
 from auxilliary.db_logger import DbLogger
 from auxilliary.multitasking import MultiTaskRunner
+from auxilliary.utility_funcs import UtilityFuncs
 from corpus.corpus import Corpus
 from corpus.sequence import Sequence
 from corpus.symbolic_reader import SymbolicReader
@@ -62,20 +63,36 @@ class SymbolicCorpus(Corpus):
         for sequence_list, vocabulary in zip(sequences, vocabularies):
             for sequence in sequence_list:
                 for token in sequence.tokenArr:
-                    if token not in vocabulary:
-                        vocabulary[token] = 0
-                    vocabulary[token] += 1
+                    UtilityFuncs.increase_dict_entry(dictionary=vocabulary, key=token, val=1)
         self.find_low_freq_token_clusters()
+        for token, freq in self.fullTrainingCorpusFrequencies.items():
+            if freq >= GlobalConstants.CORPUS_FREQUENCY_THRESHOLD:
+                self.trainingVocabulary[token] = freq
+            else:
+                new_token = self.assign_token_to_cluster(token=token)
+                UtilityFuncs.increase_dict_entry(dictionary=self.trainingVocabulary, key=new_token, val=freq)
+        # Add unknown as well
+        UtilityFuncs.increase_dict_entry(dictionary=self.trainingVocabulary, key="UNK", val=0)
+        print("X")
 
-    def transform_token(self, token):
-        if token in self.trainingVocabulary:
-            return self.trainingVocabulary[token]
-        else:
-            first_letter = token[0]
-            if first_letter not in self.lowFreqTokenClusterCenters:
-                return self.trainingVocabulary["UNK"]
-            relevant_cluster_centers = self.lowFreqTokenClusterCenters[first_letter]
+    def assign_token_to_cluster(self, token):
+        first_letter = token[0]
+        if first_letter not in self.lowFreqTokenClusterCenters:
+            return "UNK"
+        relevant_cluster_centers = self.lowFreqTokenClusterCenters[first_letter]
+        closest_cluster_center = UtilityFuncs.take_closest(sorted_list=relevant_cluster_centers, val=int(token[1:]))
+        new_token = "{0}{1}".format(first_letter, closest_cluster_center)
+        return new_token
 
+    # def transform_token(self, token):
+    #     if token in self.trainingVocabulary:
+    #         return self.trainingVocabulary[token]
+    #     else:
+    #         new_token = self.assign_token_to_cluster(token=token)
+    #         if new_token is None:
+    #             return self.trainingVocabulary["UNK"]
+    #         else:
+    #             return self.trainingVocabulary[new_token]
 
     # Private methods
     def find_low_freq_token_clusters(self):
@@ -91,7 +108,7 @@ class SymbolicCorpus(Corpus):
                     numeric_codes_dict[letter].append(int(token[1:]))
             numeric_codes = numeric_codes_dict[letter]
             if len(numeric_codes) == 1:
-                self.lowFreqTokenClusterCenters[letter] = np.array(numeric_codes[0])
+                self.lowFreqTokenClusterCenters[letter] = numeric_codes[0].asscalar()
             else:
                 self.lowFreqTokenClusterCenters[letter] = []
                 # Divide into partitions recursively until all clusters have a freq < TOTAL_COUNT*MAX_CLUSTER_FREQ_RATIO
@@ -108,7 +125,7 @@ class SymbolicCorpus(Corpus):
                     cluster_centers = ms.cluster_centers_
                     if len(labels) == 1:
                         cluster_center = cluster_centers[0]
-                        self.lowFreqTokenClusterCenters[letter].append(cluster_center)
+                        self.lowFreqTokenClusterCenters[letter].append(cluster_center.asscalar())
                     else:
                         for label in labels:
                             label_mask = ms.labels_ == label
@@ -121,5 +138,7 @@ class SymbolicCorpus(Corpus):
                             # Cluster is small enough
                             else:
                                 cluster_center = cluster_centers[label]
-                                self.lowFreqTokenClusterCenters[letter].append(cluster_center)
+                                self.lowFreqTokenClusterCenters[letter].append(cluster_center.asscalar())
                                 print("New cluster center:{0}".format(cluster_center))
+                # Sort all cluster centers
+                self.lowFreqTokenClusterCenters[letter] = sorted(self.lowFreqTokenClusterCenters[letter])

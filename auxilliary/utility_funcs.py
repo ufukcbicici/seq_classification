@@ -5,6 +5,7 @@ import numpy as np
 from os import listdir
 from os.path import isfile, join
 import itertools
+import bisect
 
 
 class UtilityFuncs:
@@ -26,7 +27,7 @@ class UtilityFuncs:
     @staticmethod
     def get_absolute_path(script_file, relative_path):
         script_dir = os.path.dirname(script_file)
-        absolute_path = script_dir + "/" + relative_path # os.path.join(script_dir, relative_path)
+        absolute_path = script_dir + "/" + relative_path  # os.path.join(script_dir, relative_path)
         absolute_path = absolute_path.replace("\\", "/")
         return absolute_path
 
@@ -70,21 +71,21 @@ class UtilityFuncs:
                 label_dict[label] = 0
             label_dict[label] += 1
         entropy = 0.0
-        for label,quantity in label_dict.items():
-            probability = float(quantity)/float(sample_count)
+        for label, quantity in label_dict.items():
+            probability = float(quantity) / float(sample_count)
             entropy -= probability * np.log2(probability)
         return entropy
 
-    @staticmethod
-    def create_parameter_from_train_program(parameter_name, train_program):
-        value_dict = train_program.load_settings_for_property(property_name=parameter_name)
-        if value_dict["type"] == "DecayingParameter":
-            param_object = DecayingParameter.from_training_program(name=parameter_name, training_program=train_program)
-        elif value_dict["type"] == "FixedParameter":
-            param_object = FixedParameter.from_training_program(name=parameter_name, training_program=train_program)
-        else:
-            raise Exception("Unknown parameter type.")
-        return param_object
+    # @staticmethod
+    # def create_parameter_from_train_program(parameter_name, train_program):
+    #     value_dict = train_program.load_settings_for_property(property_name=parameter_name)
+    #     if value_dict["type"] == "DecayingParameter":
+    #         param_object = DecayingParameter.from_training_program(name=parameter_name, training_program=train_program)
+    #     elif value_dict["type"] == "FixedParameter":
+    #         param_object = FixedParameter.from_training_program(name=parameter_name, training_program=train_program)
+    #     else:
+    #         raise Exception("Unknown parameter type.")
+    #     return param_object
 
     @staticmethod
     def load_npz(file_name):
@@ -128,4 +129,27 @@ class UtilityFuncs:
             curr_thread_id = (curr_thread_id + 1) % num_of_threads
         return thread_dict
 
+    @staticmethod
+    def take_closest(sorted_list, val):
+        """
+        Assumes myList is sorted. Returns closest value to myNumber.
 
+        If two numbers are equally close, return the smallest number.
+        """
+        pos = bisect.bisect_left(sorted_list, val)
+        if pos == 0:
+            return sorted_list[0]
+        if pos == len(sorted_list):
+            return sorted_list[-1]
+        before = sorted_list[pos - 1]
+        after = sorted_list[pos]
+        if after - val < val - before:
+            return after
+        else:
+            return before
+
+    @staticmethod
+    def increase_dict_entry(dictionary, key, val):
+        if key not in dictionary:
+            dictionary[key] = 0
+        dictionary[key] += val
