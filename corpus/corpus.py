@@ -36,6 +36,7 @@ class Corpus:
         self.fullTrainingCorpusFrequencies = {}
         self.fullValidationCorpusFrequencies = {}
         self.fullTestCorpusFrequencies = {}
+        self.trainingVocabulary = {}
 
     def read_documents(self, path, is_training):
         pass

@@ -65,12 +65,26 @@ class SymbolicCorpus(Corpus):
                     if token not in vocabulary:
                         vocabulary[token] = 0
                     vocabulary[token] += 1
-        # Build vocabulary
+        self.find_low_freq_token_clusters()
+
+    def transform_token(self, token):
+        if token in self.trainingVocabulary:
+            return self.trainingVocabulary[token]
+        else:
+            first_letter = token[0]
+            if first_letter not in self.lowFreqTokenClusterCenters:
+                return self.trainingVocabulary["UNK"]
+            relevant_cluster_centers = self.lowFreqTokenClusterCenters[first_letter]
+
+
+    # Private methods
+    def find_low_freq_token_clusters(self):
         first_letters = set([token[0] for token in self.fullTrainingCorpusFrequencies.keys()])
         low_freq_tokens = [token for token, freq in self.fullTrainingCorpusFrequencies.items()
                            if freq < GlobalConstants.CORPUS_FREQUENCY_THRESHOLD]
         numeric_codes_dict = {}
         for letter in first_letters:
+            print("Processing letter:{0}".format(letter))
             numeric_codes_dict[letter] = []
             for token in low_freq_tokens:
                 if token[0] == letter:
@@ -78,7 +92,6 @@ class SymbolicCorpus(Corpus):
             numeric_codes = numeric_codes_dict[letter]
             if len(numeric_codes) == 1:
                 self.lowFreqTokenClusterCenters[letter] = np.array(numeric_codes[0])
-                print("X")
             else:
                 self.lowFreqTokenClusterCenters[letter] = []
                 # Divide into partitions recursively until all clusters have a freq < TOTAL_COUNT*MAX_CLUSTER_FREQ_RATIO
@@ -90,31 +103,23 @@ class SymbolicCorpus(Corpus):
                     sub_cluster = cluster_info_tpls.popleft()
                     bandwidth = estimate_bandwidth(sub_cluster)
                     ms = MeanShift(bandwidth=bandwidth)
-                    ms.fit(numeric_arr)
+                    ms.fit(sub_cluster)
                     labels = np.unique(ms.labels_)
                     cluster_centers = ms.cluster_centers_
-                    for label in labels:
-                        label_mask = ms.labels_ == label
-                        new_cluster_freq = np.sum(label_mask)
-                        # Cluster is too big.
-                        if new_cluster_freq >= freq_threshold:
-                            # Select members with the given label
-                            new_cluster = sub_cluster[np.nonzero(label_mask)]
-                            cluster_info_tpls.append(new_cluster)
-                        # Cluster is small enough
-                        else:
-                            cluster_center = cluster_centers[label]
-                            self.lowFreqTokenClusterCenters[letter].append(cluster_center)
-                        print("X")
-                # numeric_arr = np.array(numeric_codes).reshape(len(numeric_codes), 1)
-                # bandwidth = estimate_bandwidth(numeric_arr)
-                # ms = MeanShift(bandwidth=bandwidth)
-                # ms.fit(numeric_arr)
-                # labels = ms.labels_
-                # cluster_centers = ms.cluster_centers_
-                # self.lowFreqTokenClusterCenters[letter] = cluster_centers.reshape(cluster_centers.shape[0])
-                # print("X")
-                # if len((numeric_codes_dict[letter])        :
-        # Apply mean-shift
-        print("X")
-
+                    if len(labels) == 1:
+                        cluster_center = cluster_centers[0]
+                        self.lowFreqTokenClusterCenters[letter].append(cluster_center)
+                    else:
+                        for label in labels:
+                            label_mask = ms.labels_ == label
+                            new_cluster_freq = np.sum(label_mask)
+                            # Cluster is too big.
+                            if new_cluster_freq >= freq_threshold:
+                                # Select members with the given label
+                                new_cluster = sub_cluster[np.nonzero(label_mask)]
+                                cluster_info_tpls.append(new_cluster)
+                            # Cluster is small enough
+                            else:
+                                cluster_center = cluster_centers[label]
+                                self.lowFreqTokenClusterCenters[letter].append(cluster_center)
+                                print("New cluster center:{0}".format(cluster_center))
