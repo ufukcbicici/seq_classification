@@ -22,6 +22,7 @@ class DbLogger:
     trainingVocabularySmallTable = "training_vocabulary_small"
     testVocabularyLargeTable = "test_vocabulary_large"
     testVocabularySmallTable = "test_vocabulary_small"
+    finalizedVocabularyTable = "finalized_vocabulary"
 
     # Lab
     # log_db_path = "E://BDA//BDA//bda_db.db"
@@ -209,6 +210,16 @@ class DbLogger:
                 if index != len(columns)-1:
                     cmd += ","
             cmd += ")"
+            cur.execute(cmd)
+        DbLogger.lock.release()
+
+    @staticmethod
+    def delete_table(table):
+        DbLogger.lock.acquire()
+        con = lite.connect(DbLogger.log_db_path)
+        with con:
+            cur = con.cursor()
+            cmd = "DELETE FROM {0}".format(table)
             cur.execute(cmd)
         DbLogger.lock.release()
 

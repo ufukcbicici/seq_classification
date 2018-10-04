@@ -8,7 +8,7 @@ from random import seed
 from random import shuffle
 from sklearn.cluster import MeanShift, estimate_bandwidth
 import numpy as np
-from collections import deque
+from collections import deque, Counter
 from global_constants import GlobalConstants
 
 
@@ -27,19 +27,6 @@ class SymbolicCorpus(Corpus):
             sequence = Sequence(document_id=id, label=res[0], tokens_list=res[1], is_training=is_training) \
                 if is_training else Sequence(document_id=id, label=-1, tokens_list=res, is_training=is_training)
             sequence_list.append(sequence)
-            # # Self process
-            # sequence_list = self.trainingSequences if is_training else self.testSequences
-            # corpus_token_dict = self.fullTrainingCorpusFrequencies if is_training else self.fullTestCorpusFrequencies
-            # results = MultiTaskRunner.run_task(runner_type=SymbolicReader, tasks=lines, is_training=is_training)
-            # for id, res in enumerate(results):
-            #     sequence = Sequence(document_id=id, label=res[0], tokens_list=res[1], is_training=is_training) \
-            #         if is_training else Sequence(document_id=id, label=-1, tokens_list=res, is_training=is_training)
-            #     sequence_list.append(sequence)
-            #     for token in sequence.tokenArr:
-            #         if token not in corpus_token_dict:
-            #             corpus_token_dict[token] = 0
-            #         corpus_token_dict[token] += 1
-            # print("X")
 
     def pick_validation_set(self, validation_ratio):
         shuffle(self.trainingSequences)
@@ -75,6 +62,20 @@ class SymbolicCorpus(Corpus):
                 UtilityFuncs.increase_dict_entry(dictionary=self.trainingVocabulary, key=new_token, val=freq)
         # Add unknown as well
         UtilityFuncs.increase_dict_entry(dictionary=self.trainingVocabulary, key="UNK", val=0)
+        # Order according to frequencies
+        token_counter = Counter(self.trainingVocabulary)
+        ordered_tokens = token_counter.most_common()
+        # Delete vocabulary table
+        DbLogger.delete_table(table=DbLogger.finalizedVocabularyTable)
+        db_rows = []
+        for index, tpl in enumerate(ordered_tokens):
+            token = tpl[0]
+            freq = tpl[1]
+            self.vocabularyTokenToIndex[token] = index
+            self.vocabularyIndexToToken[index] = token
+            db_rows.append((token, index, freq))
+        # Write to db
+        DbLogger.write_into_table(rows=db_rows, table=DbLogger.finalizedVocabularyTable, col_count=3)
         print("X")
 
     def assign_token_to_cluster(self, token):
@@ -86,15 +87,12 @@ class SymbolicCorpus(Corpus):
         new_token = "{0}{1}".format(first_letter, closest_cluster_center)
         return new_token
 
-    # def transform_token(self, token):
-    #     if token in self.trainingVocabulary:
-    #         return self.trainingVocabulary[token]
-    #     else:
-    #         new_token = self.assign_token_to_cluster(token=token)
-    #         if new_token is None:
-    #             return self.trainingVocabulary["UNK"]
-    #         else:
-    #             return self.trainingVocabulary[new_token]
+    def get_token_id(self, token):
+        if token in self.vocabularyTokenToIndex:
+            return self.vocabularyTokenToIndex[token]
+        else:
+            new_token = self.assign_token_to_cluster(token=token)
+            return self.vocabularyTokenToIndex[new_token]
 
     # Private methods
     def find_low_freq_token_clusters(self):

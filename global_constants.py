@@ -11,4 +11,5 @@ class GlobalConstants:
     # LARGE_TEST_SET = os.path.join("D:\\", "seq_classification", "data", "test-data-large.txt")
     CORPUS_FREQUENCY_THRESHOLD = 3
     MAX_CLUSTER_FREQ_RATIO = 0.25
+    CBOW_WINDOW_SIZE = 2
 
