@@ -6,7 +6,7 @@ from global_constants import GlobalConstants
 
 
 # Corpus-Vocabulary Creation
-def create_corpus(create_from_scratch=True, validation_ratio=0.1):
+def create_corpus(create_from_scratch=True, validation_ratio=0.0):
     corpus = SymbolicCorpus()
     corpus.read_documents(path=GlobalConstants.LARGE_TRAINING_SET, is_training=True)
     corpus.read_documents(path=GlobalConstants.LARGE_TEST_SET, is_training=False)
@@ -31,5 +31,4 @@ def create_embeddings(corpus, create_from_scratch=True):
 # Pipeline
 corpus = create_corpus(create_from_scratch=False)
 create_embeddings(corpus=corpus, create_from_scratch=False)
-
 

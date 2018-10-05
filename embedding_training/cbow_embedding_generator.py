@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import math
+import os
 
 from tensorflow.contrib.framework.python.framework import checkpoint_utils
 from auxilliary.db_logger import DbLogger
@@ -79,9 +80,12 @@ class CbowEmbeddingGenerator:
                 if self.contextGenerator.isNewEpoch:
                     # Save embeddings to HD
                     # os.path.join("D:\\", "deep", "BDA", "Corpus", "Data", "export.json")
-                    path = "{0}_epoch{1}.ckpt".format(GlobalConstants.EMBEDDING_CHECKPOINT_PATH, epoch_id)
+                    # path = os.path.join("/raid", "users", "ucbicici", "Code", "seq_classification",
+                    #                          "embedding_training", "embeddings")
+                    path = os.path.join(GlobalConstants.EMBEDDING_CHECKPOINT_PATH,
+                                        "embedding_epoch{0}.ckpt".format(epoch_id))
                     saver.save(sess, path)
-                    embeddings_arr = self.embeddings.eval(session=sess)
+                    # embeddings_arr = self.embeddings.eval(session=sess)
                     self.contextGenerator.validate(corpus=self.corpus, embeddings=self.get_embeddings(sess=sess))
                     break
         print("X")

@@ -31,10 +31,13 @@ class DbLogger:
     # log_db_path = "D://seq_classification//seq_db.db"
 
     # Idea GPU
-    log_db_path = "D://deep//seq_classification//seq_db.db"
+    # log_db_path = "D://deep//seq_classification//seq_db.db"
 
     # Idea
     # log_db_path = "C://Users//ufuk.bicici//Desktop//BDA//BDA//bda_db.db"
+
+    # DGX DB
+    log_db_path = "/raid/users/ucbicici/Code/seq_classification/seq_db.db"
 
 
     logFormatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
