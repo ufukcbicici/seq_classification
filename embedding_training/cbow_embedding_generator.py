@@ -60,12 +60,12 @@ class CbowEmbeddingGenerator:
         # optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9).minimize(loss, global_step=self.global_step)
         optimizer = tf.train.AdagradOptimizer(1.0).minimize(loss)
         iteration_count = 0
-        self.corpus.validate(embeddings=self.get_embeddings())
+        self.contextGenerator.validate(embeddings=self.get_embeddings())
         losses = []
         for epoch_id in range(epoch_count):
             print("*************Epoch {0}*************".format(epoch_id))
             while True:
-                context, targets = self.corpus.get_next_batch(batch_size=batch_size)
+                context, targets = self.contextGenerator.get_next_batch(batch_size=batch_size)
                 targets = np.reshape(targets, newshape=(targets.shape[0], 1))
                 feed_dict = {self.train_context: context, self.train_labels: targets}
                 results = self.sess.run([optimizer, loss], feed_dict=feed_dict)
@@ -76,12 +76,12 @@ class CbowEmbeddingGenerator:
                     print("Loss:{0}".format(mean_loss))
                     losses = []
                 iteration_count += 1
-                if self.corpus.isNewEpoch:
+                if self.contextGenerator.isNewEpoch:
                     # Save embeddings to HD
                     # os.path.join("D:\\", "deep", "BDA", "Corpus", "Data", "export.json")
                     path = "{0}_epoch{1}.ckpt".format(GlobalConstants.EMBEDDING_CHECKPOINT_PATH, epoch_id)
                     saver.save(self.sess, path)
                     embeddings_arr = self.embeddings.eval(session=self.sess)
-                    self.corpus.validate(embeddings=self.get_embeddings())
+                    self.contextGenerator.validate(embeddings=self.get_embeddings())
                     break
         print("X")

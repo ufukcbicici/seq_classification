@@ -59,13 +59,14 @@ class ContextGenerator:
         rows = DbLogger.read_tuples_from_table(table_name=table_name, condition=condition)
         self.embeddingContextsAndTargets = np.zeros(shape=(len(rows), 2 * GlobalConstants.CBOW_WINDOW_SIZE + 1),
                                                     dtype=np.int32)
+        print("Reading cbow data.")
         for i in range(len(rows)):
             row = rows[i]
             for j in range(2 * GlobalConstants.CBOW_WINDOW_SIZE):
                 self.embeddingContextsAndTargets[i, j] = row[j]
             self.embeddingContextsAndTargets[i, -1] = row[-1]
         self.reset()
-        print("X")
+        print("Reading completed. There are {0} contexts.".format(self.embeddingContextsAndTargets.shape[0]))
 
     def reset(self):
         self.currentIndex = 0

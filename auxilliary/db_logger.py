@@ -28,10 +28,10 @@ class DbLogger:
     # log_db_path = "E://BDA//BDA//bda_db.db"
 
     # Home
-    # log_db_path = "D://seq_classification//seq_db.db"
+    log_db_path = "D://seq_classification//seq_db.db"
 
     # Idea GPU
-    log_db_path = "D://deep//seq_classification//seq_db.db"
+    # log_db_path = "D://deep//seq_classification//seq_db.db"
 
     # Idea
     # log_db_path = "C://Users//ufuk.bicici//Desktop//BDA//BDA//bda_db.db"

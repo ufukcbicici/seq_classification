@@ -1,5 +1,6 @@
 from auxilliary.db_logger import DbLogger
 from corpus.symbolic_corpus import SymbolicCorpus
+from embedding_training.cbow_embedding_generator import CbowEmbeddingGenerator
 from embedding_training.context_generator import ContextGenerator
 from global_constants import GlobalConstants
 
@@ -23,7 +24,8 @@ def create_embeddings(corpus, create_from_scratch=True):
         ContextGenerator.build_cbow_tokens(corpus=corpus)
     context_generator = ContextGenerator()
     context_generator.read_cbow_data()
-
+    cbow_embedding = CbowEmbeddingGenerator(corpus=corpus, context_generator=context_generator)
+    cbow_embedding.train()
 
 # Pipeline
 corpus = create_corpus(create_from_scratch=False)
