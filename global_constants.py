@@ -16,14 +16,14 @@ class GlobalConstants:
                          "Z36",    "Z33",    "Z8"}
     # PATHS
     # Idea GPU
-    # LARGE_TRAINING_SET = os.path.join("D:\\", "deep", "seq_classification", "data", "training-data-large.txt")
-    # LARGE_TEST_SET = os.path.join("D:\\", "deep", "seq_classification", "data", "test-data-large.txt")
-    # EMBEDDING_CHECKPOINT_PATH = os.path.join("D:\\", "deep", "seq_classification", "embedding_training",
-    #                                          "embeddings")
+    LARGE_TRAINING_SET = os.path.join("D:\\", "deep", "seq_classification", "data", "training-data-large.txt")
+    LARGE_TEST_SET = os.path.join("D:\\", "deep", "seq_classification", "data", "test-data-large.txt")
+    EMBEDDING_CHECKPOINT_PATH = os.path.join("D:\\", "deep", "seq_classification", "embedding_training",
+                                             "embeddings")
     # Home
-    LARGE_TRAINING_SET = os.path.join("D:\\", "seq_classification", "data", "training-data-large.txt")
-    LARGE_TEST_SET = os.path.join("D:\\", "seq_classification", "data", "test-data-large.txt")
-    EMBEDDING_CHECKPOINT_PATH = os.path.join("D:\\", "seq_classification", "embedding_training", "embeddings")
+    # LARGE_TRAINING_SET = os.path.join("D:\\", "seq_classification", "data", "training-data-large.txt")
+    # LARGE_TEST_SET = os.path.join("D:\\", "seq_classification", "data", "test-data-large.txt")
+    # EMBEDDING_CHECKPOINT_PATH = os.path.join("D:\\", "seq_classification", "embedding_training", "embeddings")
     # EMBEDDING_CHECKPOINT_PATH
 
 

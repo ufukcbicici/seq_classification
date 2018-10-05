@@ -27,6 +27,7 @@ def create_embeddings(corpus, create_from_scratch=True):
     cbow_embedding = CbowEmbeddingGenerator(corpus=corpus, context_generator=context_generator)
     cbow_embedding.train()
 
+
 # Pipeline
 corpus = create_corpus(create_from_scratch=False)
 create_embeddings(corpus=corpus, create_from_scratch=False)

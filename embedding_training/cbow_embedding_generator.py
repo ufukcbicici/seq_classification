@@ -27,11 +27,9 @@ class CbowEmbeddingGenerator:
                                                                stddev=1.0 / math.sqrt(embedding_size)),
                                            name="softmax_weights")
         self.softmax_biases = tf.Variable(tf.zeros([vocabulary_size]), name="softmax_biases")
-        self.sess = tf.Session()
-        self.sess.run(tf.global_variables_initializer())
 
-    def get_embeddings(self):
-        return self.embeddings.eval(session=self.sess)
+    def get_embeddings(self, sess):
+        return self.embeddings.eval(session=sess)
 
     # def load_embeddings(self):
     #     # pretrained_var_list = checkpoint_utils.list_variables("embeddings_epoch99.ckpt")
@@ -40,6 +38,7 @@ class CbowEmbeddingGenerator:
     #     tf.assign(self.embeddings, source_array).eval(session=self.sess)
 
     def train(self):
+        sess = tf.Session()
         saver = tf.train.Saver()
         vocabulary_size = self.corpus.get_vocabulary_size()
         window_size = GlobalConstants.CBOW_WINDOW_SIZE
@@ -60,15 +59,16 @@ class CbowEmbeddingGenerator:
         # optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9).minimize(loss, global_step=self.global_step)
         optimizer = tf.train.AdagradOptimizer(1.0).minimize(loss)
         iteration_count = 0
-        self.contextGenerator.validate(embeddings=self.get_embeddings())
         losses = []
+        sess.run(tf.global_variables_initializer())
+        self.contextGenerator.validate(corpus=self.corpus, embeddings=self.get_embeddings(sess=sess))
         for epoch_id in range(epoch_count):
             print("*************Epoch {0}*************".format(epoch_id))
             while True:
                 context, targets = self.contextGenerator.get_next_batch(batch_size=batch_size)
                 targets = np.reshape(targets, newshape=(targets.shape[0], 1))
                 feed_dict = {self.train_context: context, self.train_labels: targets}
-                results = self.sess.run([optimizer, loss], feed_dict=feed_dict)
+                results = sess.run([optimizer, loss], feed_dict=feed_dict)
                 losses.append(results[1])
                 if iteration_count % 1000 == 0:
                     print("Iteration:{0}".format(iteration_count))
@@ -80,8 +80,8 @@ class CbowEmbeddingGenerator:
                     # Save embeddings to HD
                     # os.path.join("D:\\", "deep", "BDA", "Corpus", "Data", "export.json")
                     path = "{0}_epoch{1}.ckpt".format(GlobalConstants.EMBEDDING_CHECKPOINT_PATH, epoch_id)
-                    saver.save(self.sess, path)
-                    embeddings_arr = self.embeddings.eval(session=self.sess)
-                    self.contextGenerator.validate(embeddings=self.get_embeddings())
+                    saver.save(sess, path)
+                    embeddings_arr = self.embeddings.eval(session=sess)
+                    self.contextGenerator.validate(corpus=self.corpus, embeddings=self.get_embeddings(sess=sess))
                     break
         print("X")
