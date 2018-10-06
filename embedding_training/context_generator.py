@@ -74,6 +74,13 @@ class ContextGenerator:
         np.random.shuffle(self.currentIndices)
         self.isNewEpoch = False
 
+    def get_dummy_batch(self, batch_size):
+        dummyEmbeddingContextsAndTargets = np.zeros(shape=(1000, 2 * GlobalConstants.CBOW_WINDOW_SIZE + 1),
+                                                    dtype=np.int32)
+        context = dummyEmbeddingContextsAndTargets[0:batch_size, 0:2 * GlobalConstants.CBOW_WINDOW_SIZE]
+        targets = dummyEmbeddingContextsAndTargets[0:batch_size, -1]
+        return context, targets
+
     def get_next_batch(self, batch_size):
         num_of_samples = len(self.embeddingContextsAndTargets)
         curr_end_index = self.currentIndex + batch_size - 1
