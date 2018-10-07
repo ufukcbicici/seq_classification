@@ -11,6 +11,7 @@ def create_corpus(create_from_scratch=True, validation_ratio=0.1):
     corpus.read_documents(path=GlobalConstants.LARGE_TRAINING_SET, is_training=True)
     corpus.read_documents(path=GlobalConstants.LARGE_TEST_SET, is_training=False)
     corpus.pick_validation_set(validation_ratio=validation_ratio)
+    print([doc.documentId for doc in corpus.trainingSequences[0:100]])
     if create_from_scratch:
         corpus.analyze_data()
     else:
@@ -29,6 +30,6 @@ def create_embeddings(corpus, create_from_scratch=True):
 
 
 # Pipeline
-corpus = create_corpus(create_from_scratch=False)
+corpus = create_corpus(create_from_scratch=True)
 # create_embeddings(corpus=corpus, create_from_scratch=False)
 
