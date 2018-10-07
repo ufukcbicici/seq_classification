@@ -1,17 +1,21 @@
 import tensorflow as tf
 import numpy as np
-
+import os
 from collections import Counter
 from auxilliary.db_logger import DbLogger
+from tensorflow.contrib.framework.python.framework import checkpoint_utils
 from global_constants import GlobalConstants, DatasetType \
     # , DocumentLabel
 
 
 class DeepClassifier:
-    def __init__(self, corpus, word_embeddings):
+    def __init__(self, corpus):
         tf.reset_default_graph()
         self.corpus = corpus
-        self.wordEmbeddings = word_embeddings
+        # Load embeddings
+        pretrained_var_list = checkpoint_utils.list_variables(GlobalConstants.WORD_EMBEDDING_FILE_PATH)
+        self.wordEmbeddings = checkpoint_utils.load_variable(checkpoint_dir=GlobalConstants.WORD_EMBEDDING_FILE_PATH,
+                                                             name="embeddings")
         # IMPORTANT !!! Add a zero row at the 0. position. This will be used as the padding feature.
         self.wordEmbeddings = np.concatenate([np.zeros(shape=(1, GlobalConstants.EMBEDDING_SIZE)), self.wordEmbeddings],
                                              axis=0)
@@ -159,70 +163,70 @@ class DeepClassifier:
         print(confusion_dict)
         return accuracy, document_wise_accuracy
 
-    def test_compare_with_set(self, dataset_type):
-        confusion_dict = {}
-        label_sets = {0: {DocumentLabel.Company, DocumentLabel.Finance}, 1: {DocumentLabel.Other}}
-        # label_mappings = {DocumentLabel.Company: 0, DocumentLabel.Finance: 0, DocumentLabel.Other: 1}
-        label_mappings = {DocumentLabel.Company: 0, DocumentLabel.Finance: 1, DocumentLabel.Other: 2}
-        batch_size = GlobalConstants.BATCH_SIZE
-        if dataset_type == DatasetType.Validation:
-            self.corpus.set_current_dataset_type(dataset_type=DatasetType.Validation)
-        else:
-            self.corpus.set_current_dataset_type(dataset_type=DatasetType.Training)
-        total_correct_count = 0
-        total_count = 0
-        total_correct_document_count = 0
-        total_document_count = 0
-        document_predictions = {}
-        document_correct_labels = {}
-        while True:
-            data, labels, lengths, document_ids = \
-                self.corpus.get_next_training_batch(batch_size=batch_size, wrap_around=False)
-            feed_dict = {self.batch_size: batch_size,
-                         self.input_word_codes: data,
-                         self.input_y: labels,
-                         self.keep_prob: 1.0,
-                         self.sequence_length: lengths,
-                         self.isTrainingFlag: False}
-            run_ops = [self.correctPredictions, self.predictions]
-            results = self.sess.run(run_ops, feed_dict=feed_dict)
-            for sample_id, document_id in enumerate(document_ids.tolist()):
-                if lengths[sample_id] == 0:
-                    break
-                true_label = labels[sample_id] # label_mappings[labels[sample_id]]
-                is_sample_correct = results[0][sample_id]
-                sample_prediction = results[1][sample_id] # label_mappings[results[1][sample_id]]
-                total_correct_count += is_sample_correct # int(true_label == sample_prediction)
-                total_count += 1
-                if document_id not in document_predictions:
-                    document_predictions[document_id] = []
-                if document_id not in document_correct_labels:
-                    document_correct_labels[document_id] = []
-                document_predictions[document_id].append(sample_prediction)
-                document_correct_labels[document_id].append(true_label)
-            if self.corpus.isNewEpoch:
-                break
-        accuracy = float(total_correct_count) / float(total_count)
-        print("Dataset:{0} Accuracy:{1}".format(dataset_type, accuracy))
-        # Check document correctness
-        for k, v in document_correct_labels.items():
-            label_set = set(v)
-            assert len(label_set) == 1
-            document_label = list(label_set)[0]
-            prediction_list = document_predictions[k]
-            tpl = Counter(prediction_list).most_common(1)
-            predicted_label = tpl[0][0]
-            if predicted_label == document_label:
-                total_correct_document_count += 1
-            if (document_label, predicted_label) not in confusion_dict:
-                confusion_dict[(document_label, predicted_label)] = 0
-            confusion_dict[(document_label, predicted_label)] += 1
-            total_document_count += 1
-        document_wise_accuracy = float(total_correct_document_count) / float(total_document_count)
-        print("Dataset:{0} Document-Wise Accuracy:{1}".format(dataset_type, document_wise_accuracy))
-        print("Confusion Matrix:")
-        print(confusion_dict)
-        return accuracy, document_wise_accuracy
+    # def test_compare_with_set(self, dataset_type):
+    #     confusion_dict = {}
+    #     label_sets = {0: {DocumentLabel.Company, DocumentLabel.Finance}, 1: {DocumentLabel.Other}}
+    #     # label_mappings = {DocumentLabel.Company: 0, DocumentLabel.Finance: 0, DocumentLabel.Other: 1}
+    #     label_mappings = {DocumentLabel.Company: 0, DocumentLabel.Finance: 1, DocumentLabel.Other: 2}
+    #     batch_size = GlobalConstants.BATCH_SIZE
+    #     if dataset_type == DatasetType.Validation:
+    #         self.corpus.set_current_dataset_type(dataset_type=DatasetType.Validation)
+    #     else:
+    #         self.corpus.set_current_dataset_type(dataset_type=DatasetType.Training)
+    #     total_correct_count = 0
+    #     total_count = 0
+    #     total_correct_document_count = 0
+    #     total_document_count = 0
+    #     document_predictions = {}
+    #     document_correct_labels = {}
+    #     while True:
+    #         data, labels, lengths, document_ids = \
+    #             self.corpus.get_next_training_batch(batch_size=batch_size, wrap_around=False)
+    #         feed_dict = {self.batch_size: batch_size,
+    #                      self.input_word_codes: data,
+    #                      self.input_y: labels,
+    #                      self.keep_prob: 1.0,
+    #                      self.sequence_length: lengths,
+    #                      self.isTrainingFlag: False}
+    #         run_ops = [self.correctPredictions, self.predictions]
+    #         results = self.sess.run(run_ops, feed_dict=feed_dict)
+    #         for sample_id, document_id in enumerate(document_ids.tolist()):
+    #             if lengths[sample_id] == 0:
+    #                 break
+    #             true_label = labels[sample_id] # label_mappings[labels[sample_id]]
+    #             is_sample_correct = results[0][sample_id]
+    #             sample_prediction = results[1][sample_id] # label_mappings[results[1][sample_id]]
+    #             total_correct_count += is_sample_correct # int(true_label == sample_prediction)
+    #             total_count += 1
+    #             if document_id not in document_predictions:
+    #                 document_predictions[document_id] = []
+    #             if document_id not in document_correct_labels:
+    #                 document_correct_labels[document_id] = []
+    #             document_predictions[document_id].append(sample_prediction)
+    #             document_correct_labels[document_id].append(true_label)
+    #         if self.corpus.isNewEpoch:
+    #             break
+    #     accuracy = float(total_correct_count) / float(total_count)
+    #     print("Dataset:{0} Accuracy:{1}".format(dataset_type, accuracy))
+    #     # Check document correctness
+    #     for k, v in document_correct_labels.items():
+    #         label_set = set(v)
+    #         assert len(label_set) == 1
+    #         document_label = list(label_set)[0]
+    #         prediction_list = document_predictions[k]
+    #         tpl = Counter(prediction_list).most_common(1)
+    #         predicted_label = tpl[0][0]
+    #         if predicted_label == document_label:
+    #             total_correct_document_count += 1
+    #         if (document_label, predicted_label) not in confusion_dict:
+    #             confusion_dict[(document_label, predicted_label)] = 0
+    #         confusion_dict[(document_label, predicted_label)] += 1
+    #         total_document_count += 1
+    #     document_wise_accuracy = float(total_correct_document_count) / float(total_document_count)
+    #     print("Dataset:{0} Document-Wise Accuracy:{1}".format(dataset_type, document_wise_accuracy))
+    #     print("Confusion Matrix:")
+    #     print(confusion_dict)
+    #     return accuracy, document_wise_accuracy
 
     @staticmethod
     def get_explanation():

@@ -53,6 +53,9 @@ class GlobalConstants:
                                   "seq_classification", "data", "test-data-large.txt")
     EMBEDDING_CHECKPOINT_PATH = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop",
                                              "seq_classification", "embedding_training", "embeddings")
+    WORD_EMBEDDING_FILE_PATH = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop",
+                                            "seq_classification", "embedding_training", "embeddings",
+                                            "embedding_epoch24.ckpt")
 
     # DGX
     # LARGE_TRAINING_SET = os.path.join("/raid", "users", "ucbicici", "Code", "seq_classification", "data",

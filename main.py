@@ -1,4 +1,5 @@
 from auxilliary.db_logger import DbLogger
+from classifiers.rnn_classifier import RnnClassifier
 from corpus.symbolic_corpus import SymbolicCorpus
 from embedding_training.cbow_embedding_generator import CbowEmbeddingGenerator
 from embedding_training.context_generator import ContextGenerator
@@ -29,7 +30,14 @@ def create_embeddings(corpus, create_from_scratch=True):
     cbow_embedding.train()
 
 
+# Train Deep RNN Classifier
+def train_rnn_classifier(corpus):
+    rnn_classifier = RnnClassifier(corpus=corpus)
+    print("X")
+
+
 # Pipeline
-corpus = create_corpus(create_from_scratch=True)
+corpus = create_corpus(create_from_scratch=False)
 # create_embeddings(corpus=corpus, create_from_scratch=False)
+train_rnn_classifier(corpus=corpus)
 

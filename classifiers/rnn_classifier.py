@@ -8,8 +8,8 @@ from classifiers.deep_classifier import DeepClassifier
 
 
 class RnnClassifier(DeepClassifier):
-    def __init__(self, corpus, word_embeddings):
-        super().__init__(corpus, word_embeddings)
+    def __init__(self, corpus):
+        super().__init__(corpus)
         self.initial_state = None
         self.initial_state_fw = None
         self.initial_state_bw = None
