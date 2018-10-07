@@ -4,7 +4,7 @@ import numpy as np
 from collections import Counter
 from auxilliary.db_logger import DbLogger
 from global_constants import GlobalConstants, DatasetType
-from classifiers.classifier import DeepClassifier
+from classifiers.deep_classifier import DeepClassifier
 
 
 class RnnClassifier(DeepClassifier):
