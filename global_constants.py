@@ -21,6 +21,19 @@ class GlobalConstants:
     VALIDATION_TOKENS = {"Z4", "Z15", "X344420902", "Y3143", "Y1222", "Y1012203", "X264648477",
                          "X212549706", "Y1040796", "Y3337", "Y3331", "Y3363", "Z2", "Z3", "Z7",
                          "Z36", "Z33", "Z8"}
+    # RNN Training
+    FINE_TUNE_EMBEDDINGS = True
+    L2_LAMBDA_COEFFICENT = 0.0
+    INITIAL_LR_CLASSIFIER = 0.01
+    BATCH_SIZE = 128
+    USE_INPUT_DROPOUT = True
+    NUM_OF_LSTM_LAYERS = 1
+    USE_BIDIRECTIONAL_LSTM = True
+    LSTM_HIDDEN_LAYER_SIZE = 128
+    USE_ATTENTION_MECHANISM = True
+    DROPOUT_KEEP_PROB = 1.0
+    EPOCH_COUNT_CLASSIFIER = 20
+
     # PATHS
     # Idea GPU
     # LARGE_TRAINING_SET = os.path.join("D:\\", "deep", "seq_classification", "data", "training-data-large.txt")

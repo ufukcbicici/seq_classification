@@ -104,4 +104,8 @@ class Corpus:
                 self.currentSequenceIndex = 0
         else:
             self.isNewEpoch = False
-        return data, labels, lengths, document_ids
+        return data, labels, lengths, document_ids, max_length
+
+    def get_num_of_classes(self):
+        labels = set([seq.label for seq in self.trainingSequences])
+        return len(labels)
