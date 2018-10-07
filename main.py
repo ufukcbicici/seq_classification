@@ -1,9 +1,10 @@
 from auxilliary.db_logger import DbLogger
 from classifiers.rnn_classifier import RnnClassifier
+from classifiers.svm_classifier import SvmClassifier
 from corpus.symbolic_corpus import SymbolicCorpus
 from embedding_training.cbow_embedding_generator import CbowEmbeddingGenerator
 from embedding_training.context_generator import ContextGenerator
-from global_constants import GlobalConstants
+from global_constants import GlobalConstants, DatasetType
 
 
 # Tf-Idf analysis
@@ -44,6 +45,11 @@ def small_training_set_pipeline(validation_ratio=0.1):
     corpus.read_documents(path=GlobalConstants.SMALL_TEST_SET, is_training=False)
     corpus.pick_validation_set(validation_ratio=validation_ratio)
     corpus.tf_idf_analysis()
+    # SVM classifier
+    svm_classifier = SvmClassifier(corpus=corpus)
+    svm_classifier.train()
+    svm_classifier.test(dataset_type=DatasetType.Training)
+    svm_classifier.test(dataset_type=DatasetType.Validation)
 
 
 # large_training_set_pipeline(create_vocabulary_from_scratch=False, extract_embeddings=False)

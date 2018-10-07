@@ -24,6 +24,7 @@ class Corpus:
         self.currentSequenceIndex = None
         self.isNewEpoch = False
         self.tfIdfFeatures = {}
+        self.labelsDict = {}
 
     def read_documents(self, path, is_training):
         pass
@@ -151,15 +152,7 @@ class Corpus:
         idf_dict = {}
         bag_of_words = set()
         for sequence in self.trainingSequences:
-            seq_length = len(sequence.tokenArr)
-            document_token_set = set()
-            # Collect Term Frequencies (Tf)
-            for window in GlobalConstants.N_GRAMS:
-                for i in range(seq_length):
-                    if i + window - 1 >= seq_length:
-                        break
-                    token = tuple(sequence.tokenArr[i:i+window])
-                    document_token_set.add(token)
+            document_token_set = set(sequence.get_tokens(n_grams=GlobalConstants.N_GRAMS))
             # Build the bag of words
             bag_of_words = bag_of_words.union(document_token_set)
             # Add to corpus frequency dict, will be used for Inverse Term Frequencies (Idf)
@@ -179,8 +172,11 @@ class Corpus:
         dataset_types = [DatasetType.Training, DatasetType.Validation, DatasetType.Test]
         for dataset, dataset_type in zip(datasets, dataset_types):
             self.tfIdfFeatures[dataset_type] = np.zeros((len(dataset), len(token_dict)), dtype=np.float32)
+            if dataset_type == DatasetType.Training or dataset_type == DatasetType.Validation:
+                self.labelsDict[dataset_type] = np.zeros(shape=(len(dataset), ), dtype=np.int32)
             for id, sequence in enumerate(dataset):
-                token_counter = Counter(sequence.tokenArr)
+                tokens = sequence.get_tokens(n_grams=GlobalConstants.N_GRAMS)
+                token_counter = Counter(tokens)
                 ordered_tokens = token_counter.most_common()
                 for tpl in ordered_tokens:
                     # Skip unknown tokens
@@ -190,7 +186,9 @@ class Corpus:
                     # Get Tf-Idf
                     tf = tpl[1]
                     idf = idf_dict[tpl[0]]
-                    self.tfIdfFeatures[dataset_type][id, coordinate] = tf*idf
+                    self.tfIdfFeatures[dataset_type][id, coordinate] = float(tf)*idf
+                if dataset_type == DatasetType.Training or dataset_type == DatasetType.Validation:
+                    self.labelsDict[dataset_type][id] = sequence.label
         print("X")
 
 
