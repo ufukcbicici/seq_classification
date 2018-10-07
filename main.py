@@ -39,7 +39,7 @@ def train_rnn_classifier(corpus):
 
 
 # Pipeline
-corpus = create_corpus(create_from_scratch=True)
+corpus = create_corpus(create_from_scratch=False)
 # create_embeddings(corpus=corpus, create_from_scratch=False)
 # train_rnn_classifier(corpus=corpus)
 

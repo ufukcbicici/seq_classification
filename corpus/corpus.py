@@ -14,6 +14,7 @@ class Corpus:
         self.trainingVocabulary = {}
         self.vocabularyTokenToIndex = {}
         self.vocabularyIndexToToken = {}
+        self.vocabularyTokenToFreq = {}
         # Classifier Training
         self.currentSequenceList = None
         self.currentIndexList = []

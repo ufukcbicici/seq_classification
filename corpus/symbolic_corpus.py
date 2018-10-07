@@ -94,6 +94,21 @@ class SymbolicCorpus(Corpus):
             new_token = self.assign_token_to_cluster(token=token)
             return self.vocabularyTokenToIndex[new_token]
 
+    def read_vocabulary(self):
+        super().read_vocabulary()
+        self.lowFreqTokenClusterCenters = {}
+        for token, index in self.vocabularyTokenToIndex.items():
+            if "_lowfreq_" in token:
+                first_letter = token[0]
+                numeric_part = float(token[token.find("_lowfreq_") + len("_lowfreq_"):len(token)])
+                print("X")
+                if first_letter not in self.lowFreqTokenClusterCenters:
+                    self.lowFreqTokenClusterCenters[first_letter] = []
+                self.lowFreqTokenClusterCenters[first_letter].append(float(numeric_part))
+        for first_letter, cluster_centers in self.lowFreqTokenClusterCenters.items():
+            self.lowFreqTokenClusterCenters[first_letter] = sorted(cluster_centers)
+        print("X")
+
     # Private methods
     def find_low_freq_token_clusters(self):
         first_letters = set([token[0] for token in self.fullTrainingCorpusFrequencies.keys()])
