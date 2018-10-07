@@ -1,5 +1,6 @@
 import numpy as np
 from auxilliary.db_logger import DbLogger
+from auxilliary.utility_funcs import UtilityFuncs
 from global_constants import GlobalConstants, DatasetType
 
 
@@ -20,6 +21,7 @@ class Corpus:
         self.currentIndexList = []
         self.currentSequenceIndex = None
         self.isNewEpoch = False
+        self.tfIdfFeatures = {}
 
     def read_documents(self, path, is_training):
         pass
@@ -111,3 +113,24 @@ class Corpus:
     def get_num_of_classes(self):
         labels = set([seq.label for seq in self.trainingSequences])
         return len(labels)
+
+    def tf_idf_analysis(self):
+        document_freq_dict = {}
+        corpus_freq_dict = {}
+        for sequence in self.trainingSequences:
+            seq_length = len(sequence.tokenArr)
+            document_freq_dict[sequence.documentId] = {}
+            document_token_set = set()
+            # Collect Term Frequencies (Tf)
+            for window in GlobalConstants.N_GRAMS:
+                for i in range(seq_length):
+                    if i + window - 1 >= seq_length:
+                        break
+                    token = tuple(sequence.tokenArr[i:i+window])
+                    UtilityFuncs.increase_dict_entry(dictionary=document_freq_dict[sequence.documentId], key=token,
+                                                     val=1)
+                    document_token_set.add(token)
+            # Add to corpus frequency dict, will be used for Inverse Term Frequencies (Idf)
+            for token in document_token_set:
+                UtilityFuncs.increase_dict_entry(dictionary=corpus_freq_dict, key=token, val=1)
+        print("X")
