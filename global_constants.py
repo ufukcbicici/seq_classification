@@ -33,6 +33,8 @@ class GlobalConstants:
     USE_ATTENTION_MECHANISM = True
     DROPOUT_KEEP_PROB = 1.0
     EPOCH_COUNT_CLASSIFIER = 20
+    MAX_SEQUENCE_LENGTH = 250
+    SEQUENCE_SLIDING_WINDOW_SIZE = 250
 
     # Classical Feature Extraction
     N_GRAMS = {1}

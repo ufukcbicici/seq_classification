@@ -2,6 +2,7 @@ import numpy as np
 from auxilliary.db_logger import DbLogger
 from auxilliary.utility_funcs import UtilityFuncs
 from global_constants import GlobalConstants, DatasetType
+from corpus.sequence import Sequence
 
 
 class Corpus:
@@ -113,6 +114,24 @@ class Corpus:
     def get_num_of_classes(self):
         labels = set([seq.label for seq in self.trainingSequences])
         return len(labels)
+
+    def split_dataset_into_sequences(self):
+        datasets = [self.trainingSequences, self.validationSequences, self.testSequences]
+        training_flags = [1, 0, 0]
+        for dataset_index, dataset in enumerate(datasets):
+            splitted_dataset = []
+            training_flag = training_flags[dataset_index]
+            for sequence in dataset:
+                curr_index = 0
+                while True:
+                    subsequence = sequence.tokenArr[curr_index:curr_index + GlobalConstants.MAX_SEQUENCE_LENGTH]
+                    splitted_dataset.append(Sequence(document_id=sequence.documentId, label=sequence.label,
+                                                     tokens_list=subsequence, is_training=training_flag))
+                    curr_index += GlobalConstants.SEQUENCE_SLIDING_WINDOW_SIZE
+                    if len(subsequence) < GlobalConstants.MAX_SEQUENCE_LENGTH:
+                        break
+            dataset = splitted_dataset
+            print("X")
 
     def tf_idf_analysis(self):
         document_freq_dict = {}

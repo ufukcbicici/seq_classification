@@ -32,6 +32,7 @@ def large_training_set_pipeline(
         cbow_embedding.train()
 
     # RNN Model Training
+    corpus.split_dataset_into_sequences()
     rnn_classifier = RnnClassifier(corpus=corpus)
     rnn_classifier.build_classifier()
     rnn_classifier.train()
@@ -45,4 +46,5 @@ def small_training_set_pipeline(validation_ratio=0.1):
     corpus.tf_idf_analysis()
 
 
-small_training_set_pipeline()
+large_training_set_pipeline(create_vocabulary_from_scratch=False, extract_embeddings=False)
+# small_training_set_pipeline()
