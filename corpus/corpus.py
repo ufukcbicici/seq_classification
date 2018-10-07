@@ -90,7 +90,8 @@ class Corpus:
             lengths[count] = seq_length
             labels[count] = sequence.label
             document_ids[count] = sequence.documentId
-            token_indices = np.array(sequence.tokenArr)
+            token_id_list = [self.get_token_id(token=token) for token in sequence.tokenArr]
+            token_indices = np.array(token_id_list)
             # Increase indices by one to handle zero entries
             token_indices += 1
             data[count, 0:seq_length] = token_indices

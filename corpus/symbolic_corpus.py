@@ -84,7 +84,7 @@ class SymbolicCorpus(Corpus):
             return "UNK"
         relevant_cluster_centers = self.lowFreqTokenClusterCenters[first_letter]
         closest_cluster_center = UtilityFuncs.take_closest(sorted_list=relevant_cluster_centers, val=int(token[1:]))
-        new_token = "{0}{1}".format(first_letter, closest_cluster_center)
+        new_token = "{0}_lowfreq_{1}".format(first_letter, closest_cluster_center)
         return new_token
 
     def get_token_id(self, token):

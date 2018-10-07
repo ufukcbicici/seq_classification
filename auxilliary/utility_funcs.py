@@ -132,7 +132,7 @@ class UtilityFuncs:
     @staticmethod
     def take_closest(sorted_list, val):
         """
-        Assumes myList is sorted. Returns closest value to myNumber.
+        Assumes sorted_list is sorted. Returns closest value to myNumber.
 
         If two numbers are equally close, return the smallest number.
         """
