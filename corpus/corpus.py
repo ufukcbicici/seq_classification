@@ -161,7 +161,7 @@ class Corpus:
                     token = tuple(sequence.tokenArr[i:i+window])
                     document_token_set.add(token)
             # Build the bag of words
-            bag_of_words = bag_of_words.intersection(document_token_set)
+            bag_of_words = bag_of_words.union(document_token_set)
             # Add to corpus frequency dict, will be used for Inverse Term Frequencies (Idf)
             for token in document_token_set:
                 UtilityFuncs.increase_dict_entry(dictionary=corpus_freq_dict, key=token, val=1)
