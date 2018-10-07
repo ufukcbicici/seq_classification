@@ -116,22 +116,33 @@ class Corpus:
         return len(labels)
 
     def split_dataset_into_sequences(self):
-        datasets = [self.trainingSequences, self.validationSequences, self.testSequences]
+        datasets = [DatasetType.Training, DatasetType.Validation, DatasetType.Test]
         training_flags = [1, 0, 0]
-        for dataset_index, dataset in enumerate(datasets):
+        for dataset_index, dataset_type in enumerate(datasets):
             splitted_dataset = []
             training_flag = training_flags[dataset_index]
+            if dataset_type == DatasetType.Training:
+                dataset = self.trainingSequences
+            elif dataset_type == DatasetType.Validation:
+                dataset = self.validationSequences
+            else:
+                dataset = self.testSequences
             for sequence in dataset:
                 curr_index = 0
                 while True:
                     subsequence = sequence.tokenArr[curr_index:curr_index + GlobalConstants.MAX_SEQUENCE_LENGTH]
+                    if len(subsequence) == 0:
+                        break
                     splitted_dataset.append(Sequence(document_id=sequence.documentId, label=sequence.label,
                                                      tokens_list=subsequence, is_training=training_flag))
                     curr_index += GlobalConstants.SEQUENCE_SLIDING_WINDOW_SIZE
-                    if len(subsequence) < GlobalConstants.MAX_SEQUENCE_LENGTH:
-                        break
-            dataset = splitted_dataset
-            print("X")
+            if dataset_type == DatasetType.Training:
+                self.trainingSequences = splitted_dataset
+            elif dataset_type == DatasetType.Validation:
+                self.validationSequences = splitted_dataset
+            else:
+                self.testSequences = splitted_dataset
+        print("X")
 
     def tf_idf_analysis(self):
         document_freq_dict = {}
