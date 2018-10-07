@@ -3,6 +3,7 @@ from auxilliary.db_logger import DbLogger
 from auxilliary.utility_funcs import UtilityFuncs
 from global_constants import GlobalConstants, DatasetType
 from corpus.sequence import Sequence
+from collections import deque, Counter
 
 
 class Corpus:
@@ -145,11 +146,12 @@ class Corpus:
         print("X")
 
     def tf_idf_analysis(self):
-        document_freq_dict = {}
+        # Step 1: Extract the vocabulary
         corpus_freq_dict = {}
+        idf_dict = {}
+        bag_of_words = set()
         for sequence in self.trainingSequences:
             seq_length = len(sequence.tokenArr)
-            document_freq_dict[sequence.documentId] = {}
             document_token_set = set()
             # Collect Term Frequencies (Tf)
             for window in GlobalConstants.N_GRAMS:
@@ -157,10 +159,38 @@ class Corpus:
                     if i + window - 1 >= seq_length:
                         break
                     token = tuple(sequence.tokenArr[i:i+window])
-                    UtilityFuncs.increase_dict_entry(dictionary=document_freq_dict[sequence.documentId], key=token,
-                                                     val=1)
                     document_token_set.add(token)
+            # Build the bag of words
+            bag_of_words = bag_of_words.intersection(document_token_set)
             # Add to corpus frequency dict, will be used for Inverse Term Frequencies (Idf)
             for token in document_token_set:
                 UtilityFuncs.increase_dict_entry(dictionary=corpus_freq_dict, key=token, val=1)
+        # Calculate idf values
+        corpus_size = float(len(self.trainingSequences))
+        for k, v in corpus_freq_dict.items():
+            idf_dict[k] = np.log10(corpus_size / float(v))
+        # Step 2: Build features for training, validation and test sets
+        token_dict = {}
+        id = 0
+        for token in bag_of_words:
+            token_dict[token] = id
+            id += 1
+        datasets = [self.trainingSequences, self.validationSequences, self.testSequences]
+        dataset_types = [DatasetType.Training, DatasetType.Validation, DatasetType.Test]
+        for dataset, dataset_type in zip(datasets, dataset_types):
+            self.tfIdfFeatures[dataset_type] = np.zeros((len(dataset), len(token_dict)), dtype=np.float32)
+            for id, sequence in enumerate(dataset):
+                token_counter = Counter(sequence.tokenArr)
+                ordered_tokens = token_counter.most_common()
+                for tpl in ordered_tokens:
+                    # Skip unknown tokens
+                    if tpl[0] not in token_dict:
+                        continue
+                    coordinate = token_dict[tpl[0]]
+                    # Get Tf-Idf
+                    tf = tpl[1]
+                    idf = idf_dict[tpl[0]]
+                    self.tfIdfFeatures[dataset_type][id, coordinate] = tf*idf
         print("X")
+
+
