@@ -134,7 +134,7 @@ class RnnClassifier(DeepClassifier):
         self.corpus.set_current_dataset_type(dataset_type=DatasetType.Training)
         self.sess.run(tf.global_variables_initializer())
         tf.assign(self.embeddings, self.wordEmbeddings).eval(session=self.sess)
-        data, labels, lengths, document_ids = \
+        data, labels, lengths, document_ids, max_length = \
             self.corpus.get_next_training_batch(batch_size=GlobalConstants.BATCH_SIZE)
         lengths[0] = 10
         lengths[1:] = 15
@@ -142,7 +142,8 @@ class RnnClassifier(DeepClassifier):
                      self.input_word_codes: data,
                      self.input_y: labels,
                      self.keep_prob: GlobalConstants.DROPOUT_KEEP_PROB,
-                     self.sequence_length: lengths}
+                     self.sequence_length: lengths,
+                     self.max_sequence_length: max_length}
         run_ops = [self.mainLoss, self.outputs, self.finalLstmState, self.stateObject, self.attentionMechanismInput,
                    self.contextVector, self.alpha, self.finalState, self.temps]
         results = self.sess.run(run_ops, feed_dict=feed_dict)
@@ -163,13 +164,14 @@ class RnnClassifier(DeepClassifier):
             print("*************Epoch {0}*************".format(epoch_id))
             self.corpus.set_current_dataset_type(dataset_type=DatasetType.Training)
             while True:
-                data, labels, lengths, document_ids = \
+                data, labels, lengths, document_ids, max_length = \
                     self.corpus.get_next_training_batch(batch_size=GlobalConstants.BATCH_SIZE)
                 feed_dict = {self.batch_size: GlobalConstants.BATCH_SIZE,
                              self.input_word_codes: data,
                              self.input_y: labels,
                              self.keep_prob: GlobalConstants.DROPOUT_KEEP_PROB,
-                             self.sequence_length: lengths}
+                             self.sequence_length: lengths,
+                             self.max_sequence_length: max_length}
                 run_ops = [self.optimizer, self.mainLoss]
                 results = self.sess.run(run_ops, feed_dict=feed_dict)
                 losses.append(results[1])
@@ -184,15 +186,7 @@ class RnnClassifier(DeepClassifier):
                     print("Original results")
                     training_accuracy, doc_training_accuracy = self.test(dataset_type=DatasetType.Training)
                     test_accuracy, doc_test_accuracy = self.test(dataset_type=DatasetType.Validation)
-                    print("Unified results")
-                    # training_accuracy_unified, doc_training_accuracy_unified = \
-                    #     self.test_compare_with_set(dataset_type=DatasetType.Training)
-                    # test_accuracy_unified, doc_test_accuracy_unified = \
-                    #     self.test_compare_with_set(dataset_type=DatasetType.Validation)
                     DbLogger.write_into_table(rows=[(run_id, epoch_id, training_accuracy, test_accuracy,
                                                      doc_training_accuracy, doc_test_accuracy)],
                                               table=DbLogger.logsTable, col_count=6)
-                    # DbLogger.write_into_table(rows=[(run_id, epoch_id, training_accuracy_unified, test_accuracy_unified,
-                    #                                  doc_training_accuracy_unified, doc_test_accuracy_unified)],
-                    #                           table="logs_table_unified", col_count=6)
                     break
