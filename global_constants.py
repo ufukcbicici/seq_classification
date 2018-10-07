@@ -41,21 +41,23 @@ class GlobalConstants:
     # EMBEDDING_CHECKPOINT_PATH = os.path.join("D:\\", "deep", "seq_classification", "embedding_training",
     #                                          "embeddings")
     # Home
-    # LARGE_TRAINING_SET = os.path.join("D:\\", "seq_classification", "data", "training-data-large.txt")
-    # LARGE_TEST_SET = os.path.join("D:\\", "seq_classification", "data", "test-data-large.txt")
-    # EMBEDDING_CHECKPOINT_PATH = os.path.join("D:\\", "seq_classification", "embedding_training", "embeddings")
-    # EMBEDDING_CHECKPOINT_PATH
+    LARGE_TRAINING_SET = os.path.join("D:\\", "seq_classification", "data", "training-data-large.txt")
+    LARGE_TEST_SET = os.path.join("D:\\", "seq_classification", "data", "test-data-large.txt")
+    EMBEDDING_CHECKPOINT_PATH = os.path.join("D:\\", "seq_classification", "embedding_training", "embeddings")
+    WORD_EMBEDDING_FILE_PATH = os.path.join("D:\\", "seq_classification", "embedding_training", "embeddings",
+                                            "embedding_epoch24.ckpt")
+
 
     # Idea
-    LARGE_TRAINING_SET = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop", "seq_classification", "data",
-                                      "training-data-large.txt")
-    LARGE_TEST_SET = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop",
-                                  "seq_classification", "data", "test-data-large.txt")
-    EMBEDDING_CHECKPOINT_PATH = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop",
-                                             "seq_classification", "embedding_training", "embeddings")
-    WORD_EMBEDDING_FILE_PATH = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop",
-                                            "seq_classification", "embedding_training", "embeddings",
-                                            "embedding_epoch24.ckpt")
+    # LARGE_TRAINING_SET = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop", "seq_classification", "data",
+    #                                   "training-data-large.txt")
+    # LARGE_TEST_SET = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop",
+    #                               "seq_classification", "data", "test-data-large.txt")
+    # EMBEDDING_CHECKPOINT_PATH = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop",
+    #                                          "seq_classification", "embedding_training", "embeddings")
+    # WORD_EMBEDDING_FILE_PATH = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop",
+    #                                         "seq_classification", "embedding_training", "embeddings",
+    #                                         "embedding_epoch24.ckpt")
 
     # DGX
     # LARGE_TRAINING_SET = os.path.join("/raid", "users", "ucbicici", "Code", "seq_classification", "data",
