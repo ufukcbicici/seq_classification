@@ -49,7 +49,6 @@ class DeepClassifier:
         self.get_loss()
         self.get_accuracy()
         self.get_optimizer()
-        self.sess = tf.Session()
 
     def get_embeddings(self):
         # vocabulary_size = self.corpus.get_vocabulary_size()

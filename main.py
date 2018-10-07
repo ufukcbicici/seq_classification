@@ -33,6 +33,8 @@ def create_embeddings(corpus, create_from_scratch=True):
 # Train Deep RNN Classifier
 def train_rnn_classifier(corpus):
     rnn_classifier = RnnClassifier(corpus=corpus)
+    rnn_classifier.build_classifier()
+    rnn_classifier.train()
     print("X")
 
 
@@ -40,4 +42,5 @@ def train_rnn_classifier(corpus):
 corpus = create_corpus(create_from_scratch=False)
 # create_embeddings(corpus=corpus, create_from_scratch=False)
 train_rnn_classifier(corpus=corpus)
+
 

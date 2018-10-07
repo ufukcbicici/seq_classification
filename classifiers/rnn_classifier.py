@@ -88,7 +88,8 @@ class RnnClassifier(DeepClassifier):
                 self.attentionMechanismInput = self.outputs
             with tf.variable_scope('Attention-Model'):
                 hidden_state_length = self.attentionMechanismInput.get_shape().as_list()[-1]
-                self.contextVector = tf.Variable(tf.random_normal([hidden_state_length], stddev=0.1))
+                self.contextVector = tf.Variable(name="context_vector",
+                                                 initial_value=tf.random_normal([hidden_state_length], stddev=0.1))
                 w = self.contextVector
                 H = self.attentionMechanismInput
                 M = tf.tanh(H)
@@ -129,6 +130,7 @@ class RnnClassifier(DeepClassifier):
             self.predictions = tf.argmax(predictions, 1, name='predictions')
 
     def experiment(self):
+        self.sess = tf.Session()
         self.corpus.set_current_dataset_type(dataset_type=DatasetType.Training)
         self.sess.run(tf.global_variables_initializer())
         tf.assign(self.embeddings, self.wordEmbeddings).eval(session=self.sess)
@@ -150,6 +152,7 @@ class RnnClassifier(DeepClassifier):
         run_id = DbLogger.get_run_id()
         explanation = RnnClassifier.get_explanation()
         DbLogger.write_into_table(rows=[(run_id, explanation)], table=DbLogger.runMetaData, col_count=2)
+        self.sess = tf.Session()
         self.sess.run(tf.global_variables_initializer())
         trainable_var_dict = {v.name: v for v in tf.trainable_variables()}
         saver = tf.train.Saver(trainable_var_dict)
