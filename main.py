@@ -52,5 +52,6 @@ def small_training_set_pipeline(validation_ratio=0.1):
     svm_classifier.test(dataset_type=DatasetType.Validation)
 
 
-# large_training_set_pipeline(create_vocabulary_from_scratch=False, extract_embeddings=False)
-small_training_set_pipeline()
+if __name__ == "__main__":
+    # large_training_set_pipeline(create_vocabulary_from_scratch=False, extract_embeddings=False)
+    small_training_set_pipeline()

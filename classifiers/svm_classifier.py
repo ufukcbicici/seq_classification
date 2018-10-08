@@ -18,7 +18,7 @@ class SvmClassifier(StandardClassifer):
     def train(self):
         # Determine optimal regularizer
         exponential_distribution = scipy.stats.expon(scale=100)
-        all_regularizer_values = exponential_distribution.rvs(100).tolist()
+        all_regularizer_values = exponential_distribution.rvs(10).tolist()
         lesser_than_one = np.linspace(0.00001, 1.0, 11)
         all_regularizer_values.extend(lesser_than_one)
         all_regularizer_values.extend([10, 100, 1000, 10000])
@@ -28,7 +28,7 @@ class SvmClassifier(StandardClassifer):
         # SVM
         svm = SVC(C=1.0)
         grid_search = GridSearchCV(estimator=svm, param_grid=tuned_parameters, cv=10,
-                                   n_jobs=8, scoring=None, refit=True)
+                                   n_jobs=8, scoring=None, refit=True, verbose=5)
         grid_search.fit(X=self.corpus.tfIdfFeatures[DatasetType.Training],
                         y=self.corpus.labelsDict[DatasetType.Training])
         self.bestModel = grid_search.best_estimator_
