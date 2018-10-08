@@ -121,6 +121,7 @@ class DeepClassifier:
                          self.input_y: labels,
                          self.keep_prob: 1.0,
                          self.sequence_length: lengths,
+                         self.max_sequence_length: max_length,
                          self.isTrainingFlag: False}
             run_ops = [self.correctPredictions, self.predictions]
             results = self.sess.run(run_ops, feed_dict=feed_dict)

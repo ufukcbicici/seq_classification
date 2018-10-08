@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+import os
 
 from collections import Counter
 from auxilliary.db_logger import DbLogger
@@ -182,7 +183,9 @@ class RnnClassifier(DeepClassifier):
                     losses = []
                 if self.corpus.isNewEpoch:
                     # Save the model
-                    saver.save(self.sess, "LSTM_Models//lstm{0}_epoch{1}.ckpt".format(run_id, epoch_id))
+                    path = os.path.join(GlobalConstants.MODEL_CHECKPOINT_PATH,
+                                        "lstm{0}_epoch{1}.ckpt".format(run_id, epoch_id))
+                    saver.save(self.sess, path)
                     print("Original results")
                     training_accuracy, doc_training_accuracy = self.test(dataset_type=DatasetType.Training)
                     test_accuracy, doc_test_accuracy = self.test(dataset_type=DatasetType.Validation)
