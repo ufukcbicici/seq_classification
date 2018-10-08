@@ -183,7 +183,7 @@ class RnnClassifier(DeepClassifier):
                     losses = []
                 if self.corpus.isNewEpoch:
                     # Save the model
-                    path = os.path.join(GlobalConstants.MODEL_CHECKPOINT_PATH,
+                    path = os.path.join(GlobalConstants.RNN_MODEL_CHECKPOINT_PATH,
                                         "lstm{0}_epoch{1}.ckpt".format(run_id, epoch_id))
                     saver.save(self.sess, path)
                     print("Original results")

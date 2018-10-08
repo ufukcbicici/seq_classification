@@ -36,49 +36,28 @@ class GlobalConstants:
     MAX_SEQUENCE_LENGTH = 250
     SEQUENCE_SLIDING_WINDOW_SIZE = 250
 
+    # CNN Training
+    CNN_SLIDING_WINDOWS = [i + 1 for i in range(int(MAX_SEQUENCE_LENGTH / 2))]
+
     # Classical Feature Extraction
     N_GRAMS = {1}
 
     # PATHS
     # Idea GPU
-    # LARGE_TRAINING_SET = os.path.join("D:\\", "deep", "seq_classification", "data", "training-data-large.txt")
-    # LARGE_TEST_SET = os.path.join("D:\\", "deep", "seq_classification", "data", "test-data-large.txt")
-    # EMBEDDING_CHECKPOINT_PATH = os.path.join("D:\\", "deep", "seq_classification", "embedding_training",
-    #                                          "embeddings")
+    # ROOT_PATH = os.path.join("D:\\", "deep", "seq_classification")
     # Home
-    # LARGE_TRAINING_SET = os.path.join("D:\\", "seq_classification", "data", "training-data-large.txt")
-    # LARGE_TEST_SET = os.path.join("D:\\", "seq_classification", "data", "test-data-large.txt")
-    # EMBEDDING_CHECKPOINT_PATH = os.path.join("D:\\", "seq_classification", "embedding_training", "embeddings")
-    # EMBEDDING_CHECKPOINT_PATH
-    # LARGE_TRAINING_SET = os.path.join("D:\\", "seq_classification", "data", "training-data-large.txt")
-    # LARGE_TEST_SET = os.path.join("D:\\", "seq_classification", "data",  "test-data-large.txt")
-    # SMALL_TRAINING_SET = os.path.join("D:\\", "seq_classification", "data", "training-data-small.txt")
-    # SMALL_TEST_SET = os.path.join("D:\\", "seq_classification", "data", "test-data-small.txt")
-    # EMBEDDING_CHECKPOINT_PATH = os.path.join("D:\\", "seq_classification", "embedding_training", "embeddings")
-    # WORD_EMBEDDING_FILE_PATH = os.path.join("D:\\", "seq_classification", "embedding_training", "embeddings",
-    #                                         "embedding_epoch24.ckpt")
-
+    # ROOT_PATH = os.path.join("D:\\", "seq_classification")
     # Idea
-    LARGE_TRAINING_SET = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop", "seq_classification", "data",
-                                      "training-data-large.txt")
-    LARGE_TEST_SET = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop",
-                                  "seq_classification", "data", "test-data-large.txt")
-    SMALL_TRAINING_SET = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop", "seq_classification", "data",
-                                      "training-data-small.txt")
-    SMALL_TEST_SET = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop",
-                                  "seq_classification", "data", "test-data-small.txt")
-    EMBEDDING_CHECKPOINT_PATH = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop",
-                                             "seq_classification", "embedding_training", "embeddings")
-    WORD_EMBEDDING_FILE_PATH = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop",
-                                            "seq_classification", "embedding_training", "embeddings",
-                                            "embedding_epoch24.ckpt")
-
+    # ROOT_PATH = os.path.join("C:\\", "Users", "ufuk.bicici", "Desktop", "seq_classification")
     # DGX
-    # LARGE_TRAINING_SET = os.path.join("/raid", "users", "ucbicici", "Code", "seq_classification", "data",
-    #                                   "training-data-large.txt")
-    # LARGE_TEST_SET = os.path.join("/raid", "users", "ucbicici", "Code", "seq_classification", "data",
-    #                               "test-data-large.txt")
-    # EMBEDDING_CHECKPOINT_PATH = os.path.join("/raid", "users", "ucbicici", "Code", "seq_classification",
-    #                                          "embedding_training", "embeddings")
+    ROOT_PATH = os.path.join("/raid", "users", "ucbicici", "Code", "seq_classification")
 
-    # "/raid/users/ucbicici/Code/seq_classification/seq_db.db"
+    # Relative Paths
+    LARGE_TRAINING_SET = os.path.join(ROOT_PATH, "data", "training-data-large.txt")
+    LARGE_TEST_SET = os.path.join(ROOT_PATH, "data", "test-data-large.txt")
+    EMBEDDING_CHECKPOINT_PATH = os.path.join(ROOT_PATH, "embedding_training", "embeddings")
+    SMALL_TRAINING_SET = os.path.join(ROOT_PATH,  "data", "training-data-small.txt")
+    SMALL_TEST_SET = os.path.join(ROOT_PATH, "data", "test-data-small.txt")
+    WORD_EMBEDDING_FILE_PATH = os.path.join(ROOT_PATH, "embedding_training", "embeddings", "embedding_epoch24.ckpt")
+    RNN_MODEL_CHECKPOINT_PATH = os.path.join(ROOT_PATH, "classifiers", "models")
+    CNN_MODEL_CHECKPOINT_PATH = os.path.join(ROOT_PATH, "classifiers", "cnn_models")
